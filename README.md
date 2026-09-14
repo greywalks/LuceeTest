@@ -1,94 +1,143 @@
-# Logicore Portal — Lucee
+# Logicore Portal
 
-This repository is the **Lucee/CFML port** of [`greywalks/Logicore-Portal`](https://github.com/greywalks/Logicore-Portal). The original Flask/Python repository is intentionally left unchanged.
+Logicore Portal is an internal operations application for invoice generation, nonconforming-material tracking, employee training records, and inventory lifecycle reporting. This repository contains the Lucee/CFML implementation of the portal and preserves the established browser workflows and API contracts from the original Flask application.
 
-## Runtime
+## Project status
 
-- **Lucee 7** via CommandBox
-- **CFML** application/router and service layer
-- **H2** persistent database for portal authentication, SMS NonConforming, Training Tracker, and Inventory Management
-- **Apache POI** (through Lucee/Java interop) for Excel ingestion and generation
-- Existing **Tailwind/CSS/vanilla JavaScript** frontend preserved from the Flask project
+| Area | Status |
+| --- | --- |
+| Lucee/CFML conversion | Complete |
+| Functional parity validation | Complete |
+| Automated Lucee smoke tests | Passing |
+| Authenticated workflow tests | Passing |
+| Production security configuration | Environment-specific; see **Production checklist** |
 
-## Included modules
+Detailed conversion coverage is recorded in [`MIGRATION_PARITY.md`](MIGRATION_PARITY.md).
 
-- Portal authentication, users, permissions, and per-section access control
-- Invoice Generator
-  - Promethean Workshop Invoice
-  - Promethean Storage / Small Parts Invoice
-  - Promethean FedEx Shipment Upload
-  - AMC Warehouse Invoice
-  - TCL Warehouse Invoice
-  - Philips Warehouse & Repair Invoice
-  - Config/reference-data administration
-- SMS NonConforming CRUD, search, XLSX export, numbering, and Zebra ZPL labels
-- Training Tracker weeks, topics, videos, sessions, roster, attendance/signatures, scanned sign-off sheets, reporting, editable content, and appearance settings
-- Inventory Management lifecycle imports, SHA/event deduplication, Serial/MSO/Model history, shipping reports, Promethean quality audit/overrides/whitelist, CSV/XLSX exports
-- Generated-file access ownership/authorization
+## Core capabilities
 
-## Run locally
+### Invoice Generator
 
-Install [CommandBox](https://www.ortussolutions.com/products/commandbox), then from the repository root:
+- Promethean Workshop invoices
+- Promethean Storage and Small Parts invoices
+- Promethean FedEx shipment uploads
+- AMC warehouse invoices
+- TCL warehouse invoices
+- Philips warehouse and repair invoices
+- Pricing, dimensions, and reference-data administration
+
+### Operations modules
+
+- **SMS NonConforming:** record management, search, numbering, XLSX exports, and Zebra ZPL labels
+- **Training Tracker:** training weeks, topics, videos, sessions, rosters, attendance, signatures, scanned sign-off sheets, and reports
+- **Inventory Management:** receiving, shipping, repair, and FedEx imports; file and event deduplication; lifecycle history; shipping reports; quality audits; overrides; whitelist management; and CSV/XLSX exports
+- **Administration:** portal users, section-level permissions, Training Tracker roles, and generated-file access controls
+
+## Technology
+
+- Lucee 7 and CFML
+- CommandBox for local runtime management
+- H2 for persistent application data
+- Apache POI through Lucee/Java interoperability for Excel processing
+- Tailwind CSS, CSS, and vanilla JavaScript for the existing frontend
+
+## Local development
+
+### Prerequisites
+
+- [CommandBox](https://www.ortussolutions.com/products/commandbox)
+- A supported Java runtime for the installed CommandBox/Lucee version
+- Python 3.12 only when running the automated parity client
+
+From the repository root:
 
 ```bash
 box install commandbox-cfconfig --force
 box server start
 ```
 
-The server is configured by `server.json` and opens on:
+The local server opens at:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-Default first-run portal account:
+The runtime is configured in [`server.json`](server.json).
+
+### First-run account
+
+An empty database creates the following bootstrap administrator:
 
 ```text
-username: admin
-password: admin
+Username: admin
+Password: admin
 ```
 
-Change the password after first sign-in.
+> **Security requirement:** This account is intended only for initial setup. Change its password immediately after the first sign-in. Do not expose an instance using the bootstrap credentials to any shared or public network.
 
-## Project layout
+## Runtime data
 
-```text
-Application.cfc                 Lucee application bootstrap + datasource
-index.cfm                       Main router/API surface
-routes/
-  TrainingRoutes.cfm            Training Tracker parity URL surface
-  InventoryRoutes.cfm           Inventory Management parity URL surface
-services/
-  AuthService.cfc               Users and permissions behavior
-  LuceeAuthService.cfc          Lucee runtime bootstrap adapter
-  ConfigService.cfc             Pricing/reference configuration
-  ExcelService.cfc              XLSX reading/writing with Apache POI
-  InvoiceService.cfc            Invoice analysis/build engines
-  InvoiceWorkbookService.cfc    Source-compatible invoice workbook renderer
-  NonConformingService.cfc      SMS NonConforming behavior
-  LuceeNonConformingService.cfc Lucee runtime/export adapter
-  LuceeTrainingService.cfc      Native Training Tracker persistence/workflows
-  TrainingPdfService.cfc        Native printable sign-off PDF renderer
-  InventoryService.cfc          Native Inventory Management lifecycle/quality engine
-  OutputService.cfc             Generated-file ownership + cleanup
-lib/                            Pinned Apache POI runtime dependencies
-static/                         Preserved frontend CSS/JS/images
-views/portal.html               Build-time-rendered portal shell
-template/                       Original templates and source-derived blank layouts
-config/                         Imported reference/default JSON
-migration/                      Source-template parity references + renderer
-tests/                          Deterministic billing and authenticated workflow parity tests
-.github/workflows/              Asset sync and real Lucee smoke tests
-```
+The application creates and updates the following local directories:
 
-## Source asset synchronization
+| Directory | Purpose |
+| --- | --- |
+| `data/` | H2 database and uploaded training sign-off records |
+| `uploads/` | Temporary source files received by portal workflows |
+| `outputs/` | Generated invoices, reports, and access metadata |
+| `config/` | Versioned defaults plus runtime reference-data overrides |
 
-`.github/workflows/import-source-assets.yml` checks out the original `Logicore-Portal` repository and copies unchanged frontend assets, XLSX templates, logos, and reference JSON into this repository. It also renders the original Jinja portal template into a static Lucee-compatible shell so the browser DOM/IDs and existing JavaScript contracts remain aligned with the original application.
+Runtime databases, uploads, generated outputs, and mutable configuration files are excluded from version control. Back up the persistent directories according to the deployment's retention requirements.
 
-Python/Jinja is used **only by this GitHub build-time migration workflow**. The application itself runs on Lucee/CFML and does not require Python.
+## Validation
 
-## Compatibility goal
+The automated validation suite starts a real Lucee instance and verifies:
 
-The port intentionally preserves the original public URL/API contract (`/sanitize`, `/analyze_storage`, `/analyze_amc`, `/analyze_tcl`, `/analyze_philips`, `/nonconforming/api/*`, `/training-tracker/*`, `/inventory-management/*`, etc.) so the existing browser frontend continues to work without a simultaneous UI rewrite.
+- Health, login, portal navigation, and permission enforcement
+- All invoice analysis, confirmation, generation, and download workflows
+- Workbook sheet names, headers, formulas, metadata cells, dates, and identifier types
+- Workshop billing history, duplicate exclusion, price tiers, and companion workbooks
+- NonConforming CRUD, exports, numbering, and label output
+- Training attendance, PDFs, signed-sheet uploads, ZIP/XLSX reports, and roles
+- Inventory imports, duplicate detection, lifecycle views, reporting, and restricted-user access
 
-The original Python repository remains the behavior/reference implementation. GitHub Actions boots a real Lucee instance for runtime parity checks, and additional authenticated/module tests are maintained alongside the migration.
+The test definitions are located in:
+
+- [`.github/workflows/lucee-smoke-test.yml`](.github/workflows/lucee-smoke-test.yml)
+- [`tests/billing_parity.cfm`](tests/billing_parity.cfm)
+- [`tests/http_parity.py`](tests/http_parity.py)
+
+The `.github/workflows` files are retained for the upstream GitHub validation workflow. GitLab does not execute GitHub Actions; configure a GitLab CI pipeline separately if validation must run natively in this project.
+
+## Production checklist
+
+Before deploying beyond a developer workstation:
+
+- Replace the bootstrap administrator password and create named administrator accounts.
+- Serve the portal through HTTPS and enable secure session cookies in `Application.cfc`.
+- Keep `data/`, `uploads/`, `outputs/`, application source, and configuration files inaccessible from direct web requests.
+- Provide persistent storage and backups for the H2 database and required uploaded records.
+- Limit filesystem permissions to the service account running Lucee.
+- Set upload, request-size, reverse-proxy, and retention limits appropriate for production workloads.
+- Run the full authenticated parity suite against an isolated test instance after deployment changes.
+
+## Repository structure
+
+| Path | Responsibility |
+| --- | --- |
+| `Application.cfc` | Application bootstrap, datasource, sessions, service registration, and request protection |
+| `index.cfm` | Main router and API surface |
+| `routes/` | Training Tracker and Inventory Management route handlers |
+| `services/` | Authentication, configuration, invoices, Excel, reporting, training, inventory, and output services |
+| `static/` | Frontend CSS, JavaScript, and images |
+| `views/` | Lucee-compatible portal shell |
+| `template/` | Invoice templates and source-compatible workbook layouts |
+| `config/` | Reference data and default configuration |
+| `lib/` | Pinned Apache POI runtime dependencies |
+| `migration/` | Conversion-time templates and rendering utilities |
+| `tests/` | Billing fixtures and authenticated end-to-end parity tests |
+
+## Compatibility and source synchronization
+
+The Lucee implementation retains the existing route and browser contracts, including invoice, NonConforming, Training Tracker, and Inventory Management endpoints. This allows the established frontend to operate without a simultaneous UI rewrite.
+
+The upstream asset-import workflow can synchronize unchanged frontend assets, workbook templates, logos, reference JSON, and rendered portal markup from the original Flask repository. Python/Jinja is used only by that conversion-time workflow; the deployed application itself runs on Lucee/CFML.
