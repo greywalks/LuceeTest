@@ -1,6 +1,6 @@
 // ── Shared sidebar nav (safe subset of app.js) ────────────────────────────────
 // Used on pages that render the portal sidebar but aren't the main SPA page
-// (currently: Training Tracker's base.html). Keeps only what the sidebar
+// (currently: Training Tracker and Inventory Management). Keeps only what the sidebar
 // needs — mobile open/close and portal-level tab navigation — without the
 // rest of app.js, which assumes Invoice Generator form elements exist on the
 // page and would throw on load here.

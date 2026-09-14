@@ -37,7 +37,13 @@ assert api('/healthz')['engine']=='Lucee'
 for protected in ['/services/InvoiceService.cfc','/config/serial_rules.json','/template/FedEx_Shipment_Upload_Template.xlsx','/server.json']:check(s.get(BASE+protected),404)
 portal=check(s.get(BASE+'/')).text
 assert '"invoiceChildren"' in portal and '"isSuperadmin"' in portal
-for p in ['/training-tracker/','/inventory-management/','/admin/permissions']:check(s.get(BASE+p))
+for p,active in [('/training-tracker/','portal-nav-training-tracker'),('/inventory-management/','portal-nav-inventory-management')]:
+ page=check(s.get(BASE+p)).text
+ assert 'class="app-shell"' in page and 'id="sidebar"' in page,page[:1600]
+ assert f'id="{active}"' in page and f'id="{active}" href' in page,page[:1600]
+ assert '/static/js/sidebar-nav.js' in page and 'localStorage.getItem("theme")' in page,page[:1600]
+ assert 'â' not in page and 'Â' not in page,page[:1600]
+check(s.get(BASE+'/admin/permissions'))
 
 # Config round-trip tests the actual upload/download argument order and numeric data.
 dims=book({'Dimensions':(['Model','Sq Footage'],[['TEST-75',20],['TEST-86',35]])})

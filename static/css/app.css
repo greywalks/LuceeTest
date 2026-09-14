@@ -293,6 +293,141 @@ span[class*="border-accent"] { font-weight: 600; letter-spacing: .04em; }
 
 .page-content { max-width: 880px; margin: 0 auto; padding: 40px 28px 64px; position: relative; z-index: 1; }
 
+/* Mounted workspaces (Training Tracker and Inventory Management) */
+.workspace-account {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.workspace-account a:hover,
+.workspace-account button:hover { color: var(--accent); }
+.workspace-account button { background: none; border: 0; padding: 0; color: inherit; }
+
+.workspace-content {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 28px 32px 64px;
+  position: relative;
+  z-index: 1;
+  color: var(--text-sub);
+}
+.workspace-title {
+  margin: 22px 0 16px;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 3vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -.025em;
+}
+.workspace-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.workspace-subnav a {
+  padding: 7px 11px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.workspace-subnav a:hover { background: var(--bg-100); color: var(--text); }
+.workspace-subnav a.active {
+  background: rgba(var(--accent-rgb),.1);
+  border-color: rgba(var(--accent-rgb),.25);
+  color: var(--accent-dim);
+}
+.workspace-content h2 {
+  margin: 22px 0 10px;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.workspace-content p { margin: 8px 0; }
+.workspace-content a { color: var(--accent-dim); }
+.workspace-content a:hover { color: var(--accent); }
+.workspace-content .muted { color: var(--text-muted); }
+.workspace-content .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+.workspace-content .card {
+  margin: 12px 0;
+  padding: 16px;
+  background: var(--bg-50);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.workspace-content table { width: 100%; border-collapse: collapse; }
+.workspace-content th,
+.workspace-content td {
+  padding: 10px 9px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+.workspace-content th {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.workspace-content input:not([type="checkbox"]):not([type="radio"]),
+.workspace-content select,
+.workspace-content textarea {
+  max-width: 100%;
+  margin: 3px 2px 3px 0;
+  padding: 8px 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+.workspace-content textarea { min-width: min(320px, 100%); min-height: 80px; }
+.workspace-content input:focus,
+.workspace-content select:focus,
+.workspace-content textarea:focus {
+  outline: none;
+  border-color: var(--accent-dim);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.12);
+}
+.workspace-content button,
+.workspace-content .btn {
+  display: inline-block;
+  margin: 3px 2px 3px 0;
+  padding: 8px 12px;
+  background: var(--accent);
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: #07100d;
+  font-weight: 700;
+}
+.workspace-content button:hover,
+.workspace-content .btn:hover { background: var(--accent-glow); color: #07100d; }
+.workspace-content .danger { background: #dc2626; color: #fff; }
+.workspace-content .danger:hover { background: #ef4444; color: #fff; }
+.workspace-content .inline { display: inline; }
+.workspace-content pre {
+  overflow: auto;
+  padding: 12px;
+  background: var(--bg-100);
+  border-radius: var(--radius-sm);
+  color: var(--text-sub);
+}
+
 /* Corner-bracket signature — echoes the Logicore "L" mark; used sparingly on hero/result cards */
 .bracket-card { position: relative; }
 .bracket-card::before {
@@ -312,6 +447,8 @@ footer { border-top: 1px solid var(--border); margin-top: 40px; }
   .sidebar.open { transform: translateX(0); }
   .main { width: 100%; }
   .page-content { padding: 28px 16px 48px; }
+  .workspace-content { padding: 22px 16px 48px; overflow-x: auto; }
+  .workspace-account { gap: 9px; font-size: 10px; }
 }
 
 /* Mobile sidebar trigger (hidden on desktop) */
