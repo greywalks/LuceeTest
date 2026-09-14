@@ -1,26 +1,26 @@
 {
-  "name": "Logicore Portal Lucee",
-  "app": {
-    "cfengine": "lucee@7"
-  },
-  "env": {
-    "LUCEE_EXTENSIONS": "465E1E35-2425-4F4E-8B3FAB638BD7280A;version=2.1.214.0001L",
-    "LUCEE_PRESERVE_CASE": "true"
-  },
-  "web": {
-    "webroot": ".",
-    "directoryBrowsing": false,
-    "rewrites": {
-      "enable": true
+    "name":"Logicore Portal Lucee",
+    "app":{
+        "cfengine":"lucee@7"
     },
-    "rules": [
-      "regex-nocase('^/(data|uploads|outputs|services|routes|config|migration|template)/') -> set-error(404)",
-      "regex-nocase('^/(Application\\.cfc|server\\.json|\\.CFConfig\\.json|MIGRATION_PARITY\\.md|README\\.md)$') -> set-error(404)"
-    ],
-    "HTTP": {
-      "enable": true,
-      "port": 5000
-    }
-  },
-  "openBrowser": true
+    "env":{
+        "LUCEE_EXTENSIONS":"465E1E35-2425-4F4E-8B3FAB638BD7280A;version=2.1.214.0001L",
+        "LUCEE_PRESERVE_CASE":"true"
+    },
+    "web":{
+        "webroot":".",
+        "directoryBrowsing":false,
+        "rewrites":{
+            "enable":true
+        },
+        "rules":[
+            "regex-nocase('^/(data|uploads|outputs|services|routes|config|migration|template)/') -> set-error(404)",
+            "regex-nocase('^/(Application\\.cfc|server\\.json|\\.CFConfig\\.json|MIGRATION_PARITY\\.md|README\\.md)$') -> set-error(404)"
+        ],
+        "HTTP":{
+            "enable":true,
+            "port":5000
+        }
+    },
+    "openBrowser":true
 }
